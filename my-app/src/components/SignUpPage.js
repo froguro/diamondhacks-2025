@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 
 function SignUpPage() {
   const navigate = useNavigate();
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -20,10 +22,40 @@ function SignUpPage() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle sign up logic here
+    try {
+      const response = await fetch('http://localhost:5000/api/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess(true);
+        setTimeout(() => {
+          navigate('/login');
+        }, 3000); // Redirect to login after 3 seconds
+      } else {
+        setError(data.message || 'Signup failed');
+      }
+    } catch (error) {
+      setError('An error occurred. Please try again.');
+    }
   };
+
+  if (success) {
+    return (
+      <div className="signup-success">
+        <h2>Account Successfully Created!</h2>
+        <p>Redirecting to login page...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="signup-page">
