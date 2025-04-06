@@ -22,21 +22,42 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  try {
+    const authHeader = req.headers['authorization'];
+    console.log('Auth Header:', authHeader); // Debug header
 
-  if (!token) return res.status(401).json({ message: 'Access denied' });
+    const token = authHeader && authHeader.split(' ')[1];
+    console.log('Token:', token ? 'Present' : 'Missing'); // Debug token presence
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(403).json({ message: 'Invalid token' });
-    // Store both userId and username in req.user
-    req.user = {
-      userId: decoded.userId,
-      username: decoded.username
-    };
-    next();
-  });
+    if (!token) {
+      return res.status(401).json({ message: 'Access denied - No token' });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        console.error('Token verification error:', err.message); // Debug verification error
+        return res.status(403).json({ 
+          message: 'Invalid token',
+          details: err.message // More detailed error message
+        });
+      }
+
+      req.user = {
+        userId: decoded.userId,
+        username: decoded.username
+      };
+      console.log('Decoded token:', { userId: decoded.userId, username: decoded.username }); // Debug decoded data
+      next();
+    });
+  } catch (error) {
+    console.error('Authentication error:', error);
+    res.status(500).json({ message: 'Server authentication error' });
+  }
 };
+
+app.get('/', (req, res) => {
+    res.send('Hello from server!');
+  });
 
 // Sign up endpoint
 // Sign up endpoint
