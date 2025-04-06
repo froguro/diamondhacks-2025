@@ -26,7 +26,7 @@ function LogSection({ selectedDate, onClose, initialData }) {
 
   const handleSaveLog = async () => {
     try {
-      const response = await fetch('https://diamondhacks-2025.onrender.com/api/daily-log', {
+      const response = await fetch('http://localhost:3001/api/daily-log', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
