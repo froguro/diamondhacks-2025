@@ -17,4 +17,7 @@ const dailyLogSchema = new mongoose.Schema({
   hoursOfSleep: { type: Number }
 });
 
+// Index for userId and date combination
+dailyLogSchema.index({ userId: 1, date: 1 }, { unique: true });
+
 module.exports = mongoose.model('DailyLog', dailyLogSchema);
