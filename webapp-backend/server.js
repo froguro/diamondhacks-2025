@@ -7,8 +7,16 @@ const dotenv = require('dotenv');
 const User = require('./models/User');
 const DailyLog = require('./models/DailyLog');
 const HealthData = require('./models/HealthKitData');
-const { generateAIResponse } = require('./AskAI');
+// const { generateAIResponse } = require('./AskAI');
 // import { generateAIResponse } from '../AskAI.js';
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { MongoClient, ObjectId } = require('mongodb');
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const mongoUri = process.env.MONGO_URI || 'mongodb+srv://admin:WEiQqFlpp1DkgVxw@solz.3mnoret.mongodb.net/?retryWrites=true&w=majority&appName=solz';
+const client = new MongoClient(mongoUri);
+const dbName = 'test';
+const collectionName = 'dailylogs';
 
 const app = express();
 dotenv.config();
@@ -401,16 +409,62 @@ app.post('/api/check-health-data', authenticateToken, async (req, res) => {
 app.post('/api/ask-ai', authenticateToken, async (req, res) => {
   try {
     const { date } = req.body;
+    console.log(date)
     const userId = req.user.userId;
+    console.log(userId)
 
     console.log('Received request:', { date, userId }); // Debug log
 
-    const summary = await generateAIResponse(userId);
+    // Connect to MongoDB
+        await client.connect();
+        // console.log('✅ MongoDB connected successfully');
     
-    if (!summary) {
-      return res.status(404).json({ message: 'Could not generate summary' });
-    }
-
+        const db = client.db(dbName);
+        const collection = db.collection(collectionName); // Access the 'dailylogs' collection
+    
+        // Fetch all entries for the current user based on userId
+        const userEntries = await collection.find(
+          { userId: userId },  // Filter by userId
+          { sort: { date: -1 } }  // Sort by date in descending order
+        ).toArray();
+    
+        if (userEntries.length === 0) {
+          console.log(`No entries found for user ${currentUserId}`);
+        } else {
+          // Print only the entries for the current user
+          // console.log('📄 Entries for User:', JSON.stringify(userEntries, null, 2));
+        }
+    
+        // Prepare the prompt for Gemini model if needed
+        const parsedData = userEntries;
+    
+        const prompt = `
+    You are a health assistant AI. Summarize the following user health data into a clear, readable summary.
+    Include: activity, sleep, heart rate, medical history, recent test results, and AI recommendations.
+    Set a goal for tomorrow based on the data.
+    Only mention information that is not within normal ranges. Praise the exceptional and point out what is concerning.
+    
+    JSON:
+    ${JSON.stringify(parsedData, null, 2)}
+        `;
+    
+        // Send data to Gemini model for summary
+        const result = await ai.models.generateContent({
+          model: 'gemini-2.0-flash',
+          contents: [{ role: 'user', parts: [{ text: prompt }] }]
+        });
+    
+        // Extract summary from the model response
+        const summary = result.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+        if (!summary) {
+          throw new Error('No summary found in the model response.');
+        }
+    
+        // Print the health summary
+        console.log('📋 Health Summary:\n');
+        console.log(summary);
+    
     res.json({ summary });
   } catch (error) {
     console.error('Error in /api/ask-ai:', error);
