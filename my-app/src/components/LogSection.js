@@ -26,7 +26,7 @@ function LogSection({ selectedDate, onClose, initialData }) {
 
   const handleSaveLog = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/daily-log', {
+      const response = await fetch('http://localhost:3001/api/daily-log', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

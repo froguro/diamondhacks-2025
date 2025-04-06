@@ -10,7 +10,7 @@ function ForgotPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/forgot-password', {
+      const response = await fetch('http://localhost:3001/api/forgot-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
