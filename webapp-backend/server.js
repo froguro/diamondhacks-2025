@@ -6,7 +6,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const User = require('./models/User');
 const DailyLog = require('./models/DailyLog');
-
+const HealthData = require('./models/HealthKitData');
 
 const app = express();
 dotenv.config();
