@@ -13,7 +13,7 @@ dotenv.config();
 
 // Configure CORS with specific options
 app.use(cors({
-  origin: 'http://localhost:3000', // Allow only your React frontend
+  origin: 'https://diamondhacks-2025-frontend.onrender.com', // Allow only your React frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
   allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
   credentials: true // Allow cookies if you need them
