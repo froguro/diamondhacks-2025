@@ -43,15 +43,15 @@ function Dashboard() {
   };
 
   const handleImportStats = () => {
-    if (isMobile) {
-      window.location.href = 'solz://';
-    } else {
-      setShowMessage(true);
-      // Set a timer to hide the message after 5 seconds
-      setTimeout(() => {
-        setShowMessage(false);
-      }, 5000);
-    }
+    // if (isMobile) {
+    //   window.location.href = 'solz://';
+    // } else {
+    //   setShowMessage(true);
+    //   // Set a timer to hide the message after 5 seconds
+    //   setTimeout(() => {
+    //     setShowMessage(false);
+    //   }, 5000);
+    // }
     
     // Start polling for new health data
     setPolling(true);

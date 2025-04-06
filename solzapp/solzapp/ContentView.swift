@@ -125,12 +125,12 @@ struct ContentView: View {
 
                     print("Successfully posted full HealthKit data!")
 
-                    // Open the website
-                    DispatchQueue.main.async {
-                        if let webURL = URL(string: "https://diamondhacks-2025-frontend.onrender.com") {
-                            openURL(webURL)
-                        }
-                    }
+//                    // Open the website
+//                    DispatchQueue.main.async {
+//                        if let webURL = URL(string: "https://diamondhacks-2025-frontend.onrender.com") {
+//                            openURL(webURL)
+//                        }
+//                    }
                 }.resume()
             }
         }
