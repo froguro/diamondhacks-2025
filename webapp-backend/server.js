@@ -6,7 +6,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const User = require('./models/User');
 const DailyLog = require('./models/DailyLog');
-
+const HealthData = require('./models/HealthKitData');
 
 const app = express();
 dotenv.config();
@@ -203,6 +203,67 @@ app.post('/api/daily-log', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Error saving log' });
   }
 });
+
+// Sending health data to database
+app.post('/api/submit-health-data', async (req, res) => {
+  try {
+    const {
+      username,
+      timestamp,
+      stepCount,
+      distanceWalkingRunning,
+      restingEnergy,
+      activeEnergy,
+      flightsClimbed,
+      heartRate,
+      restingHeartRate,
+      walkingHeartRateAvg,
+      bodyTemperature,
+      bloodPressureDiastolic,
+      bloodPressureSystolic,
+      hoursOfSleep
+    } = req.body;
+
+    if (!username || !timestamp) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const healthData = new HealthData({
+      username,
+      timestamp,
+      stepCount,
+      distanceWalkingRunning,
+      restingEnergy,
+      activeEnergy,
+      flightsClimbed,
+      heartRate,
+      restingHeartRate,
+      walkingHeartRateAvg,
+      bodyTemperature,
+      bloodPressureDiastolic,
+      bloodPressureSystolic,
+      hoursOfSleep
+    });
+
+    await healthData.save();
+    res.status(201).json({ message: 'Health data saved successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error saving health data', error: error.message });
+  }
+});
+
+// Get all health data for a user
+app.get('/api/user/:username/health-data', async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    const data = await HealthData.find({ username }).sort({ timestamp: -1 }); // newest first
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching health data', error: error.message });
+  }
+});
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
