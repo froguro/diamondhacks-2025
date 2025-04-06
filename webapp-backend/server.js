@@ -33,41 +33,49 @@ const authenticateToken = (req, res, next) => {
 };
 
 // Sign up endpoint
+// Sign up endpoint
 app.post('/api/signup', async (req, res) => {
-  try {
-    const { firstName, lastName, email, password, dateOfBirth, country, stateProvince } = req.body;
-
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+    try {
+      const { username, firstName, lastName, email, password, dateOfBirth, country, stateProvince } = req.body;
+  
+      // Check if username already exists
+      const existingUsername = await User.findOne({ username });
+      if (existingUsername) {
+        return res.status(400).json({ message: 'Username already taken' });
+      }
+  
+      // Check if email already exists
+      const existingEmail = await User.findOne({ email });
+      if (existingEmail) {
+        return res.status(400).json({ message: 'Email already registered' });
+      }
+  
+      // Hash password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+  
+      // Create new user
+      const user = new User({
+        username,
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+        dateOfBirth,
+        country,
+        stateProvince
+      });
+  
+      await user.save();
+  
+      // Generate JWT token
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+  
+      res.status(201).json({ token, firstName: user.firstName });
+    } catch (error) {
+      res.status(500).json({ message: 'Error creating user', error: error.message });
     }
-
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // Create new user
-    const user = new User({
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-      dateOfBirth,
-      country,
-      stateProvince
-    });
-
-    await user.save();
-
-    // Generate JWT token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-    res.status(201).json({ token, firstName: user.firstName });
-  } catch (error) {
-    res.status(500).json({ message: 'Error creating user', error: error.message });
-  }
-});
+  });
 
 // ... existing endpoints ...
 
@@ -103,30 +111,31 @@ app.post('/api/update-password', authenticateToken, async (req, res) => {
   });
   
 // Login endpoint
+// Login endpoint
 app.post('/api/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // Find user
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: 'User not found' });
+    try {
+      const { username, password } = req.body;
+  
+      // Find user by username instead of email
+      const user = await User.findOne({ username });
+      if (!user) {
+        return res.status(400).json({ message: 'User not found' });
+      }
+  
+      // Verify password
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) {
+        return res.status(400).json({ message: 'Invalid password' });
+      }
+  
+      // Generate JWT token
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+  
+      res.json({ token, firstName: user.firstName });
+    } catch (error) {
+      res.status(500).json({ message: 'Error logging in', error: error.message });
     }
-
-    // Verify password
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) {
-      return res.status(400).json({ message: 'Invalid password' });
-    }
-
-    // Generate JWT token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-    res.json({ token, firstName: user.firstName });
-  } catch (error) {
-    res.status(500).json({ message: 'Error logging in', error: error.message });
-  }
-});
+  });
 
 // Protected dashboard endpoint
 app.get('/api/dashboard', authenticateToken, async (req, res) => {

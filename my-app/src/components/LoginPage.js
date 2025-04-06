@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');  // Changed from email
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ function LoginPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),  // Changed from email
       });
 
       const data = await response.json();
@@ -37,11 +37,11 @@ function LoginPage() {
       <form onSubmit={handleSubmit}>
         {error && <p className="error-message">{error}</p>}
         <div>
-          <label>Email:</label>
+          <label>Username:</label>
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
         </div>

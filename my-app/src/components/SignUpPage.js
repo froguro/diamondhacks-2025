@@ -6,6 +6,7 @@ function SignUpPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
+    username: '',
     firstName: '',
     lastName: '',
     email: '',
@@ -61,6 +62,16 @@ function SignUpPage() {
     <div className="signup-page">
       <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
+        <div>
+          <label>Username:</label>
+          <input
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            required
+          />
+        </div>
         <div>
           <label>First Name:</label>
           <input
