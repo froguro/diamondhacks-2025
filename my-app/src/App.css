@@ -5,7 +5,7 @@
   justify-content: center;
   min-height: 100vh;
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: #102542;
   margin: 0 auto;  /* Add this */
 }
 
@@ -23,6 +23,7 @@
 align-items: center;
 gap: 3rem;
 flex-wrap: wrap; /* for responsiveness */
+background: #cdd7d6;
 }
 .left-panel {
   display: flex;
@@ -49,6 +50,7 @@ flex-wrap: wrap; /* for responsiveness */
   padding: 0.75rem 1.5rem;
   font-size: 1rem;
   cursor: pointer;
+  background: #f87060;
 }
 
 .right-panel {
