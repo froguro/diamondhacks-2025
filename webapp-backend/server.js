@@ -429,7 +429,7 @@ app.post('/api/ask-ai', authenticateToken, async (req, res) => {
         ).toArray();
     
         if (userEntries.length === 0) {
-          console.log(`No entries found for user ${currentUserId}`);
+          console.log(`No entries found for user ${userId}`);
         } else {
           // Print only the entries for the current user
           // console.log('📄 Entries for User:', JSON.stringify(userEntries, null, 2));
