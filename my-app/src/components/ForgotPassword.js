@@ -10,7 +10,7 @@ function ForgotPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3001/api/forgot-password', {
+      const response = await fetch('https://diamondhacks-2025.onrender.com/api/forgot-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
