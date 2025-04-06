@@ -26,7 +26,7 @@ function SignUpPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3001/api/signup', {
+      const response = await fetch('https://diamondhacks-2025.onrender.com/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
