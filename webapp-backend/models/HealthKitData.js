@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const HealthKitDataSchema = new mongoose.Schema({
   username: String,
   timestamp: Number,
+  date: Date,
 
   // Metrics
   stepCount: Number,
