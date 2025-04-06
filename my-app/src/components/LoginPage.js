@@ -9,8 +9,16 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Clear previous errors
+
+    // Input validation
+    if (!username.trim() || !password.trim()) {
+      setError('Please enter both username and password');
+      return;
+    }
+
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
+      const response = await fetch('http://localhost:3001/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -24,10 +32,34 @@ function LoginPage() {
         localStorage.setItem('token', data.token);
         navigate('/dashboard');
       } else {
-        setError(data.message || 'Login failed');
+        // Handle specific error cases
+        switch (response.status) {
+          case 400:
+            setError(data.message || 'Invalid username or password');
+            break;
+          case 401:
+            setError('Unauthorized access');
+            break;
+          case 429:
+            setError('Too many login attempts. Please try again later');
+            break;
+          case 500:
+            setError('Server error. Please try again later');
+            break;
+          default:
+            setError(data.message || 'Login failed');
+        }
       }
     } catch (error) {
-      setError('An error occurred. Please try again.');
+      // Handle network and connection errors
+      if (!navigator.onLine) {
+        setError('No internet connection. Please check your network');
+      } else if (error.name === 'TypeError') {
+        setError('Unable to connect to server. Please try again later');
+      } else {
+        console.error('Login error:', error);
+        setError('An unexpected error occurred. Please try again');
+      }
     }
   };
 
