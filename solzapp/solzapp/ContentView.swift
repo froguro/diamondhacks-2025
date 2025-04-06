@@ -10,12 +10,13 @@ struct ContentView: View {
         GeometryReader {geometry in
             VStack (alignment:.leading){
                 // Title at the top
-                Text("[insert logo]")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .padding(.top, 55)
-                    .padding(.horizontal, 90)
-                
+                HStack {
+                    Spacer()
+                    Image("happy") //replace with logo
+                        .resizable()
+                        .frame(width: 100, height: 100)
+                    Spacer()
+                }.padding(.top, 20)
                 
                 Text("Welcome!")
                     .font(.largeTitle)
@@ -26,7 +27,7 @@ struct ContentView: View {
                 Text("To get your medical assessment, \n\nStep 1: Allow access to the health app \n\nStep 2: Enter your username\n\nStep 3: Tap the button to go to our assessment website \n\nStep 4: To verify security, we'll send you an authentication code through Auth0")
                     .font(.headline)
                     .fontWeight(.bold)
-                    .padding(.top, 10)
+                    .padding(.top, 3)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, 40)
