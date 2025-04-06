@@ -355,6 +355,14 @@ app.post('/api/check-health-data', authenticateToken, async (req, res) => {
         distanceWalkingRunning: healthData.distanceWalkingRunning,
         activeEnergy: healthData.activeEnergy,
         heartRate: healthData.heartRate,
+        hoursOfSleep: healthData.hoursOfSleep,
+        flightsClimbed: healthData.flightsClimbed,
+        restingEnergy: healthData.restingEnergy,
+        restingHeartRate: healthData.restingHeartRate,
+        walkingHeartRateAvg: healthData.walkingHeartRateAvg,
+        bodyTemperature: healthData.bodyTemperature,
+        bloodPressureDiastolic: healthData.bloodPressureDiastolic,
+        bloodPressureSystolic: healthData.bloodPressureSystolic,
         healthDataImported: true
       });
       await dailyLog.save();
@@ -367,6 +375,15 @@ app.post('/api/check-health-data', authenticateToken, async (req, res) => {
       dailyLog.distanceWalkingRunning = healthData.distanceWalkingRunning;
       dailyLog.activeEnergy = healthData.activeEnergy;
       dailyLog.heartRate = healthData.heartRate;
+      dailyLog.hoursOfSleep = healthData.hoursOfSleep;
+      dailyLog.flightsClimbed = healthData.flightsClimbed;
+      dailyLog.restingEnergy = healthData.restingEnergy;
+      dailyLog.restingHeartRate = healthData.restingHeartRate;
+      dailyLog.walkingHeartRateAvg = healthData.walkingHeartRateAvg;
+      dailyLog.bodyTemperature = healthData.bodyTemperature;
+      dailyLog.bloodPressureDiastolic = healthData.bloodPressureDiastolic;
+      dailyLog.bloodPressureSystolic = healthData.bloodPressureSystolic;
+      
       dailyLog.healthDataImported = true;
       await dailyLog.save();
       console.log('Daily log updated:', dailyLog);
