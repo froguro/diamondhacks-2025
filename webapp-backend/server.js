@@ -449,10 +449,8 @@ app.post('/api/ask-ai', authenticateToken, async (req, res) => {
         `;
     
         // Send data to Gemini model for summary
-        const result = await ai.models.generateContent({
-          model: 'gemini-2.0-flash',
-          contents: [{ role: 'user', parts: [{ text: prompt }] }]
-        });
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+        const result = await model.generateContent(prompt);
     
         // Extract summary from the model response
         const summary = result.candidates?.[0]?.content?.parts?.[0]?.text;
