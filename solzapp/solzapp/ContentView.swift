@@ -3,35 +3,28 @@ import HealthKit
 
 struct ContentView: View {
     @Environment(\.openURL) var openURL
+    @State private var username: String = ""
     let healthKitManager = HealthKitManager()
 
     var body: some View {
         VStack {
+            Text("Enter your username:")
+            .font(.headline)
+            .padding(.top)
+
+            // TextField for username input
+            TextField("Username", text: $username)
+            .padding()
+            .textFieldStyle(RoundedBorderTextFieldStyle())
+            .frame(width: 300)
             Button(action: {
-                sendHealthDataAndOpenWebsite()
+                sendHealthDataAndOpenWebsite(user: username)
             }) {
                 Text("Go to Website")
                     .font(.title2)
                     .padding()
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .frame(width: 300)
-
-                // Button to go to the website
-                Button(action: {
-                    // Check if the username is not empty
-                    if !username.isEmpty,
-                       let url = URL(string: "https://www.example.com?username=\(username)") {
-                        openURL(url)
-                    }
-                }) {
-                    Text("Go to Website")
-                        .font(.title2)
-                        .padding()
-                        .foregroundColor(.white)
-                        .background(Color.black)
-                        .cornerRadius(12)
-                }
-                .padding(.top, 20)
             }
             .padding()
         }
@@ -48,7 +41,7 @@ struct ContentView: View {
         }
     }
 
-    func sendHealthDataAndOpenWebsite() {
+    func sendHealthDataAndOpenWebsite(user: String) {
         healthKitManager.fetchStepCount { steps, error in
             guard let steps = steps else {
                 print("Could not fetch steps: \(String(describing: error))")
@@ -81,7 +74,7 @@ struct ContentView: View {
 
                 // Open the website after sending
                 DispatchQueue.main.async {
-                    if let webURL = URL(string: "https://www.example.com") {
+                    if let webURL = URL(string: "https://www.example.com?username=\(user)") {
                         openURL(webURL)
                     }
                 }
