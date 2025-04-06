@@ -127,7 +127,7 @@ struct ContentView: View {
 
                     // Open the website
                     DispatchQueue.main.async {
-                        if let webURL = URL(string: "http://localhost:3000/") {
+                        if let webURL = URL(string: "https://diamondhacks-2025-frontend.onrender.com") {
                             openURL(webURL)
                         }
                     }

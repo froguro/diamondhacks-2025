@@ -15,23 +15,10 @@ dotenv.config();
 
 // Configure CORS with specific options
 app.use(cors({
-  origin: function(origin, callback) {
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'https://diamondhacks-2025.onrender.com',
-      'https://diamondhacks-2025-frontend.onrender.com'
-    ];
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  origin: 'https://diamondhacks-2025-frontend.onrender.com', // Allow only your React frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+  credentials: true // Allow cookies if you need them
 }));
 
 app.use(express.json());
@@ -311,16 +298,29 @@ app.get('/api/user/:username/health-data', async (req, res) => {
 app.post('/api/check-health-data', authenticateToken, async (req, res) => {
   try {
     const { date, username } = req.body;
+
+    // Validate input
+    if (!username) {
+      return res.status(400).json({ message: 'Username is required' });
+    }
+    if (!date || isNaN(new Date(date))) {
+      return res.status(400).json({ message: 'Invalid or missing date' });
+    }
+
     const startOfDay = new Date(date);
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
+
+    // Convert to Unix timestamps
+    const startOfDayTimestamp = Math.floor(startOfDay.getTime() / 1000); // Convert to seconds
+    const endOfDayTimestamp = Math.floor(endOfDay.getTime() / 1000); // Convert to seconds
 
     // Find latest HealthKit data for this user and date
     const healthData = await HealthData.findOne({
       username: username,
       timestamp: {
-        $gte: startOfDay,
-        $lte: endOfDay
+        $gte: startOfDayTimestamp,
+        $lte: endOfDayTimestamp
       }
     }).sort({ timestamp: -1 });
 
@@ -359,7 +359,7 @@ app.post('/api/check-health-data', authenticateToken, async (req, res) => {
     }
   } catch (error) {
     console.error('Health data check error:', error);
-    res.status(500).json({ error: 'Failed to check health data' });
+    res.status(500).json({ message: 'Error checking health data', error: error.message });
   }
 });
 
