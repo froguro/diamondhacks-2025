@@ -19,7 +19,7 @@ function Dashboard() {
 
   const checkForNewHealthData = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/check-health-data', {
+      const response = await fetch('https://diamondhacks-2025.onrender.com/api/check-health-data', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -77,7 +77,7 @@ function Dashboard() {
 
   const fetchDailyLog = async (date) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/daily-log/${date.format('YYYY-MM-DD')}`, {
+      const response = await fetch(`https://diamondhacks-2025.onrender.com/api/daily-log/${date.format('YYYY-MM-DD')}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
