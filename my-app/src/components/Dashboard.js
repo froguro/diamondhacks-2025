@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -14,7 +14,62 @@ function Dashboard() {
   const firstName = localStorage.getItem('firstName') || 'User';
   const isMobile = /iPhone|Android/i.test(navigator.userAgent);
   const [showMessage, setShowMessage] = useState(false);
+  const [polling, setPolling] = useState(false);
+  const username = localStorage.getItem('username');
 
+  const checkForNewHealthData = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/check-health-data', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          date: value.format('YYYY-MM-DD'),
+          username: username
+        })
+      });
+
+      const data = await response.json();
+      if (data.dataImported) {
+        setPolling(false);
+        await fetchDailyLog(value);
+        setShowLogSection(true);
+      }
+    } catch (error) {
+      console.error('Error checking health data:', error);
+    }
+  };
+
+  const handleImportStats = () => {
+    if (isMobile) {
+      window.location.href = 'solz://';
+    } else {
+      setShowMessage(true);
+    }
+    
+    // Start polling for new health data
+    setPolling(true);
+    const pollInterval = setInterval(() => {
+      if (polling) {
+        checkForNewHealthData();
+      } else {
+        clearInterval(pollInterval);
+      }
+    }, 3000); // Check every 3 seconds
+
+    // Stop polling after 2 minutes if no data found
+    setTimeout(() => {
+      setPolling(false);
+      clearInterval(pollInterval);
+    }, 120000);
+  };
+
+  // Cleanup polling on component unmount
+  useEffect(() => {
+    return () => setPolling(false);
+  }, []);
 
   const fetchDailyLog = async (date) => {
     try {
@@ -40,17 +95,6 @@ function Dashboard() {
   const handleLogStats = async () => {
     await fetchDailyLog(value); // Fetch data for the selected date
     setShowLogSection(true);
-  };
-
-  const handleImportStats = () => {
-    // TODO: Implement import stats functionality
-      
-    if (isMobile) {
-       window.location.href = 'solz://'; // your custom scheme
-     } else {
-         setShowMessage(true);
-    }
-    console.log('Importing stats for:', value.format('YYYY-MM-DD'));
   };
 
   return (

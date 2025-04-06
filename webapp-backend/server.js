@@ -293,6 +293,61 @@ app.get('/api/user/:username/health-data', async (req, res) => {
   }
 });
 
+app.post('/api/check-health-data', authenticateToken, async (req, res) => {
+  try {
+    const { date, username } = req.body;
+    const startOfDay = new Date(date);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Find latest HealthKit data for this user and date
+    const healthData = await HealthData.findOne({
+      username: username,
+      timestamp: {
+        $gte: startOfDay,
+        $lte: endOfDay
+      }
+    }).sort({ timestamp: -1 });
+
+    if (!healthData) {
+      return res.json({ dataImported: false });
+    }
+
+    // Check if this data is already in DailyLog
+    let dailyLog = await DailyLog.findOne({
+      userId: req.user.userId,
+      date: startOfDay
+    });
+
+    if (!dailyLog) {
+      // Create new daily log with health data
+      dailyLog = new DailyLog({
+        userId: req.user.userId,
+        date: startOfDay,
+        stepCount: healthData.stepCount,
+        distanceWalkingRunning: healthData.distanceWalkingRunning,
+        activeEnergy: healthData.activeEnergy,
+        heartRate: healthData.heartRate,
+        healthDataImported: true
+      });
+      await dailyLog.save();
+      res.json({ dataImported: true });
+    } else {
+      // Update existing daily log
+      dailyLog.stepCount = healthData.stepCount;
+      dailyLog.distanceWalkingRunning = healthData.distanceWalkingRunning;
+      dailyLog.activeEnergy = healthData.activeEnergy;
+      dailyLog.heartRate = healthData.heartRate;
+      dailyLog.healthDataImported = true;
+      await dailyLog.save();
+      res.json({ dataImported: true });
+    }
+  } catch (error) {
+    console.error('Health data check error:', error);
+    res.status(500).json({ error: 'Failed to check health data' });
+  }
+});
+
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
