@@ -7,16 +7,31 @@ const dotenv = require('dotenv');
 const User = require('./models/User');
 const DailyLog = require('./models/DailyLog');
 const HealthData = require('./models/HealthKitData');
+const { generateAIResponse } = require('./AskAI');
+// import { generateAIResponse } from '../AskAI.js';
 
 const app = express();
 dotenv.config();
 
 // Configure CORS with specific options
 app.use(cors({
-  origin: 'http://localhost:3000', // Allow only your React frontend
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
-  credentials: true // Allow cookies if you need them
+  origin: function(origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://diamondhacks-2025.onrender.com',
+      'https://diamondhacks-2025-frontend.onrender.com'
+    ];
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 
 app.use(express.json());
@@ -348,6 +363,29 @@ app.post('/api/check-health-data', authenticateToken, async (req, res) => {
   }
 });
 
+
+app.post('/api/ask-ai', authenticateToken, async (req, res) => {
+  try {
+    const { date } = req.body;
+    const userId = req.user.userId;
+
+    console.log('Received request:', { date, userId }); // Debug log
+
+    const summary = await generateAIResponse(userId);
+    
+    if (!summary) {
+      return res.status(404).json({ message: 'Could not generate summary' });
+    }
+
+    res.json({ summary });
+  } catch (error) {
+    console.error('Error in /api/ask-ai:', error);
+    res.status(500).json({ 
+      message: 'Error generating AI analysis',
+      error: error.message 
+    });
+  }
+});
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

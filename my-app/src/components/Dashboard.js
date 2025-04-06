@@ -6,6 +6,8 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { Button, Box, Typography } from '@mui/material';
 import Navbar from './Navbar';
 import LogSection from './LogSection';  // Add this import
+// Add Dialog imports at the top
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
 function Dashboard() {
   const [value, setValue] = useState(dayjs());
@@ -101,6 +103,40 @@ function Dashboard() {
     setShowLogSection(true);
   };
 
+  const [aiSummary, setAiSummary] = useState('');
+  const [showAiDialog, setShowAiDialog] = useState(false);
+
+  const handleAskAI = async () => {
+    try {
+        console.log("running");
+      const response = await fetch('http://localhost:3001/api/ask-ai', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          date: value.format('YYYY-MM-DD'),
+          username: username
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.summary) {
+        setAiSummary(data.summary);
+        setShowAiDialog(true);
+      }
+    } catch (error) {
+      console.error('Error getting AI analysis:', error);
+      setAiSummary('Failed to get AI analysis. Please try again.');
+      setShowAiDialog(true);
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -141,6 +177,7 @@ function Dashboard() {
             <Button
               variant="contained"
               color="info"
+              onClick={handleAskAI}
               sx={{ backgroundColor: '#f87060' }}
             >
               Ask AI About Your Stats
@@ -156,6 +193,22 @@ function Dashboard() {
           )}
         </Box>
       </div>
+      <Dialog 
+        open={showAiDialog} 
+        onClose={() => setShowAiDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>AI Health Analysis</DialogTitle>
+        <DialogContent>
+          <Typography sx={{ whiteSpace: 'pre-line', my: 2 }}>
+            {aiSummary || 'Analyzing your health data...'}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowAiDialog(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

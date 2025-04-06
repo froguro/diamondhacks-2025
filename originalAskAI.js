@@ -11,7 +11,7 @@ const client = new MongoClient(mongoUri);
 const dbName = 'test';
 const collectionName = 'dailylogs';
 
-const currentUserId = '67f23180703fd58151e01013';
+// const currentUserId = '67f23180703fd58151e01013';
 
 const main = async () => {
   try {
