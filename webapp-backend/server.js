@@ -434,7 +434,7 @@ app.post('/api/ask-ai', authenticateToken, async (req, res) => {
           // Print only the entries for the current user
           // console.log('📄 Entries for User:', JSON.stringify(userEntries, null, 2));
         }
-    
+        console.log('Hi')
         // Prepare the prompt for Gemini model if needed
         const parsedData = userEntries;
     
@@ -447,13 +447,14 @@ app.post('/api/ask-ai', authenticateToken, async (req, res) => {
     JSON:
     ${JSON.stringify(parsedData, null, 2)}
         `;
-    
+        console.log('Hi')
         // Send data to Gemini model for summary
         const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
         const result = await model.generateContent(prompt);
-    
+        console.log('Hi')
         // Extract summary from the model response
-        const summary = result.candidates?.[0]?.content?.parts?.[0]?.text;
+        const summary = result.response.text();
+        console.log('Hiiii')
     
         if (!summary) {
           throw new Error('No summary found in the model response.');
