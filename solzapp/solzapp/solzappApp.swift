@@ -2,7 +2,7 @@
 //  solzappApp.swift
 //  solzapp
 //
-//  Created by Larry Bui Tran on 4/5/25.
+//  Created by Owen Lam on 4/5/25.
 //
 
 import SwiftUI
