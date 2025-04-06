@@ -7,36 +7,71 @@ struct ContentView: View {
     let healthKitManager = HealthKitManager()
 
     var body: some View {
-        VStack {
-            Text("Enter your username:")
-            .font(.headline)
-            .padding(.top)
+        GeometryReader {geometry in
+            VStack (alignment:.leading){
+                // Title at the top
+                Text("[insert logo]")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .padding(.top, 55)
+                    .padding(.horizontal, 90)
+                
+                
+                Text("Welcome!")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .padding(.top, 40)
+                    .padding(.horizontal, 35)
 
-            // TextField for username input
-            TextField("Username", text: $username)
-            .padding()
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .frame(width: 300)
-            Button(action: {
-                sendHealthDataAndOpenWebsite(user: username)
-            }) {
-                Text("Go to Website")
-                    .font(.title2)
+                Text("To get your medical assessment, \n\nStep 1: Allow access to the health app \n\nStep 2: Enter your username\n\nStep 3: Tap the button to go to our assessment website \n\nStep 4: To verify security, we'll send you an authentication code through Auth0")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .padding(.top, 10)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 40)
+                
+                
+                VStack {
+                    Text("Enter Username")
+                        .font(.title2)
+                        .padding(.top)
+                        .fontWeight(.bold)
+                        .foregroundStyle(Color.white)
+                    
+                    // TextField for username input
+                    TextField("Username", text: $username)
+                        .padding()
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .frame(width: 325)
+                    Button(action: {
+                        sendHealthDataAndOpenWebsite(user: username)
+                    }) {
+                        Text("Get Assessment")
+                            .font(.title2)
+                            .padding()
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(width: 300)
+                            .fontWeight(.bold)
+                    }
+                    .background(Color.white)
+                    .cornerRadius(20)
                     .padding()
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .frame(width: 300)
-            }
-            .padding()
-        }
-        .padding()
-        .onAppear {
-            // Ask for HealthKit permissions on load
-            healthKitManager.requestAuthorization { success, error in
-                if success {
-                    print("HealthKit authorization granted.")
-                } else {
-                    print("Authorization failed: \(String(describing: error))")
                 }
+                .background(Color.blue.opacity(0.90))
+                .cornerRadius(20)
+                .padding()
+                .onAppear {
+                    // Ask for HealthKit permissions on load
+                    healthKitManager.requestAuthorization { success, error in
+                        if success {
+                            print("HealthKit authorization granted.")
+                        } else {
+                            print("Authorization failed: \(String(describing: error))")
+                        }
+                    }
+                }
+                .frame(width: geometry.size.width)
             }
         }
     }
