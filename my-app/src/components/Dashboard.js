@@ -47,6 +47,10 @@ function Dashboard() {
       window.location.href = 'solz://';
     } else {
       setShowMessage(true);
+      // Set a timer to hide the message after 5 seconds
+      setTimeout(() => {
+        setShowMessage(false);
+      }, 5000);
     }
     
     // Start polling for new health data
@@ -122,6 +126,7 @@ function Dashboard() {
               variant="contained" 
               color="primary" 
               onClick={handleLogStats}
+              sx={{ backgroundColor: '#f87060' }}
             >
               Log Stats
             </Button>
@@ -129,8 +134,16 @@ function Dashboard() {
               variant="contained" 
               color="secondary" 
               onClick={handleImportStats}
+              sx={{ backgroundColor: '#f87060' }}
             >
               Import Stats
+            </Button>
+            <Button
+              variant="contained"
+              color="info"
+              sx={{ backgroundColor: '#f87060' }}
+            >
+              Ask AI About Your Stats
             </Button>
           </Box>
 
