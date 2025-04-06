@@ -12,6 +12,9 @@ function Dashboard() {
   const [showLogSection, setShowLogSection] = useState(false);
   const [logData, setLogData] = useState(null);
   const firstName = localStorage.getItem('firstName') || 'User';
+  const isMobile = /iPhone|Android/i.test(navigator.userAgent);
+  const [showMessage, setShowMessage] = useState(false);
+
 
   const fetchDailyLog = async (date) => {
     try {
@@ -41,6 +44,12 @@ function Dashboard() {
 
   const handleImportStats = () => {
     // TODO: Implement import stats functionality
+      
+    if (isMobile) {
+       window.location.href = 'solz://'; // your custom scheme
+     } else {
+         setShowMessage(true);
+    }
     console.log('Importing stats for:', value.format('YYYY-MM-DD'));
   };
 
@@ -59,7 +68,11 @@ function Dashboard() {
               onChange={handleDateChange} 
             />
           </LocalizationProvider>
-
+          {showMessage && (
+              <Typography sx={{ color: 'red', textAlign: 'center' }}>
+                Please open this link on your phone to launch the app.
+              </Typography>
+          )}
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button 
               variant="contained" 

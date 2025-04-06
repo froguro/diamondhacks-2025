@@ -25,7 +25,7 @@ struct ContentView: View {
                         .fontWeight(.bold)
                         .padding(.horizontal, 35)
                     
-                    Text("To get your medical assessment, \n\nStep 1: Allow access to the health app \n\nStep 2: Enter your username\n\nStep 3: Tap the button to go to our assessment website \n\nStep 4: To verify security, we'll send you an authentication code through Auth0")
+                    Text("To get your medical assessment, \n\nStep 1: Allow access to the health app \n\nStep 2: Enter your username\n\nStep 3: Tap the button to go to our assessment website")
                         .font(.headline)
                         .fontWeight(.bold)
                         .padding(.top, 3)

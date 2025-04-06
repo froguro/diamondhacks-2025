@@ -17,5 +17,15 @@
     <string>We need access to your step count to personalize your experience.</string>
     <key>NSHealthUpdateUsageDescription</key>
     <string>We need access to your step count to personalize your experience.</string>
+
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>solz</string>
+        </array>
+      </dict>
+    </array>
 </dict>
 </plist>
