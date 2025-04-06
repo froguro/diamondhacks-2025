@@ -237,6 +237,7 @@ app.post('/api/submit-health-data', async (req, res) => {
     const {
       username,
       timestamp,
+      date,
       stepCount,
       distanceWalkingRunning,
       restingEnergy,
@@ -251,13 +252,14 @@ app.post('/api/submit-health-data', async (req, res) => {
       hoursOfSleep
     } = req.body;
 
-    if (!username || !timestamp) {
+    if (!username || !date) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
     const healthData = new HealthData({
       username,
       timestamp,
+      date,
       stepCount,
       distanceWalkingRunning,
       restingEnergy,

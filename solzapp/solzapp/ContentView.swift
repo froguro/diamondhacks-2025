@@ -127,7 +127,7 @@ struct ContentView: View {
 
                     // Open the website
                     DispatchQueue.main.async {
-                        if let webURL = URL(string: "https://google.com/") {
+                        if let webURL = URL(string: "http://localhost:3000/") {
                             openURL(webURL)
                         }
                     }
