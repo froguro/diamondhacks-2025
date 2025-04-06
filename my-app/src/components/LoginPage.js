@@ -30,6 +30,8 @@ function LoginPage() {
 
       if (response.ok) {
         localStorage.setItem('token', data.token);
+        localStorage.setItem('firstName', data.firstName);
+        localStorage.setItem('username', username);
         navigate('/dashboard');
       } else {
         // Handle specific error cases

@@ -297,15 +297,22 @@ app.get('/api/user/:username/health-data', async (req, res) => {
 
 app.post('/api/check-health-data', authenticateToken, async (req, res) => {
   try {
+    console.log('--- /api/check-health-data called ---'); // Log when the route is called
+    console.log('Request body:', req.body); // Log the request body
+
     const { date, username } = req.body;
 
     // Validate input
     if (!username) {
+      console.log('Validation failed: Username is missing');
       return res.status(400).json({ message: 'Username is required' });
     }
     if (!date || isNaN(new Date(date))) {
+      console.log('Validation failed: Invalid or missing date');
       return res.status(400).json({ message: 'Invalid or missing date' });
     }
+
+    console.log('Validation passed. Date:', date, 'Username:', username);
 
     const startOfDay = new Date(date);
     const endOfDay = new Date(date);
@@ -314,6 +321,9 @@ app.post('/api/check-health-data', authenticateToken, async (req, res) => {
     // Convert to Unix timestamps
     const startOfDayTimestamp = Math.floor(startOfDay.getTime() / 1000); // Convert to seconds
     const endOfDayTimestamp = Math.floor(endOfDay.getTime() / 1000); // Convert to seconds
+
+    console.log('Start of day timestamp:', startOfDayTimestamp);
+    console.log('End of day timestamp:', endOfDayTimestamp);
 
     // Find latest HealthKit data for this user and date
     const healthData = await HealthData.findOne({
@@ -325,8 +335,11 @@ app.post('/api/check-health-data', authenticateToken, async (req, res) => {
     }).sort({ timestamp: -1 });
 
     if (!healthData) {
+      console.log('No health data found for the given date and username');
       return res.json({ dataImported: false });
     }
+
+    console.log('Health data found:', healthData);
 
     // Check if this data is already in DailyLog
     let dailyLog = await DailyLog.findOne({
@@ -335,6 +348,7 @@ app.post('/api/check-health-data', authenticateToken, async (req, res) => {
     });
 
     if (!dailyLog) {
+      console.log('No daily log found. Creating a new one.');
       // Create new daily log with health data
       dailyLog = new DailyLog({
         userId: req.user.userId,
@@ -343,18 +357,38 @@ app.post('/api/check-health-data', authenticateToken, async (req, res) => {
         distanceWalkingRunning: healthData.distanceWalkingRunning,
         activeEnergy: healthData.activeEnergy,
         heartRate: healthData.heartRate,
+        hoursOfSleep: healthData.hoursOfSleep,
+        flightsClimbed: healthData.flightsClimbed,
+        restingEnergy: healthData.restingEnergy,
+        restingHeartRate: healthData.restingHeartRate,
+        walkingHeartRateAvg: healthData.walkingHeartRateAvg,
+        bodyTemperature: healthData.bodyTemperature,
+        bloodPressureDiastolic: healthData.bloodPressureDiastolic,
+        bloodPressureSystolic: healthData.bloodPressureSystolic,
         healthDataImported: true
       });
       await dailyLog.save();
+      console.log('New daily log created:', dailyLog);
       res.json({ dataImported: true });
     } else {
+      console.log('Existing daily log found. Updating it.');
       // Update existing daily log
       dailyLog.stepCount = healthData.stepCount;
       dailyLog.distanceWalkingRunning = healthData.distanceWalkingRunning;
       dailyLog.activeEnergy = healthData.activeEnergy;
       dailyLog.heartRate = healthData.heartRate;
+      dailyLog.hoursOfSleep = healthData.hoursOfSleep;
+      dailyLog.flightsClimbed = healthData.flightsClimbed;
+      dailyLog.restingEnergy = healthData.restingEnergy;
+      dailyLog.restingHeartRate = healthData.restingHeartRate;
+      dailyLog.walkingHeartRateAvg = healthData.walkingHeartRateAvg;
+      dailyLog.bodyTemperature = healthData.bodyTemperature;
+      dailyLog.bloodPressureDiastolic = healthData.bloodPressureDiastolic;
+      dailyLog.bloodPressureSystolic = healthData.bloodPressureSystolic;
+      
       dailyLog.healthDataImported = true;
       await dailyLog.save();
+      console.log('Daily log updated:', dailyLog);
       res.json({ dataImported: true });
     }
   } catch (error) {
