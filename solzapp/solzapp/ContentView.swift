@@ -8,12 +8,22 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.openURL) var openURL
+
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            Button(action: {
+                if let url = URL(string: "https://www.example.com") {
+                    openURL(url)
+                }
+            }) {
+                Text("Go to Website")
+                    .font(.title2)
+                    .padding()
+                    .foregroundColor(.white)
+                    .background(Color.blue)
+                    .cornerRadius(12)
+            }
         }
         .padding()
     }
