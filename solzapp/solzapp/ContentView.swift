@@ -13,10 +13,27 @@ struct ContentView: View {
                 Text("Go to Website")
                     .font(.title2)
                     .padding()
-                    .foregroundColor(.white)
-                    .background(Color.blue)
-                    .cornerRadius(12)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .frame(width: 300)
+
+                // Button to go to the website
+                Button(action: {
+                    // Check if the username is not empty
+                    if !username.isEmpty,
+                       let url = URL(string: "https://www.example.com?username=\(username)") {
+                        openURL(url)
+                    }
+                }) {
+                    Text("Go to Website")
+                        .font(.title2)
+                        .padding()
+                        .foregroundColor(.white)
+                        .background(Color.black)
+                        .cornerRadius(12)
+                }
+                .padding(.top, 20)
             }
+            .padding()
         }
         .padding()
         .onAppear {
