@@ -77,46 +77,48 @@ struct ContentView: View {
     }
 
     func sendHealthDataAndOpenWebsite(user: String) {
-        healthKitManager.fetchStepCount { steps, error in
-            guard let steps = steps else {
-                print("Could not fetch steps: \(String(describing: error))")
-                return
-            }
-
-            // Build the POST request
-            let urlString = "https://your-api-endpoint.com/submit" // Replace with your backend endpoint
-            guard let url = URL(string: urlString) else { return }
-
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-            let body: [String: Any] = [
-                "stepCount": steps,
-                "timestamp": Date().timeIntervalSince1970
-            ]
-
-            request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-
-            // Send the request
-            URLSession.shared.dataTask(with: request) { data, response, error in
-                if let error = error {
-                    print("Error posting data: \(error.localizedDescription)")
+            healthKitManager.fetchHealthKitData { data, error in
+                guard var data = data else {
+                    print("Error fetching HealthKit data: \(String(describing: error))")
                     return
                 }
 
-                print("Successfully posted step data!")
+                data["username"] = user // Add username to payload
 
-                // Open the website after sending
-                DispatchQueue.main.async {
-                    if let webURL = URL(string: "https://www.example.com?username=\(user)") {
-                        openURL(webURL)
-                    }
+                // Build the POST request
+                let urlString = "https://diamondhacks-2025.onrender.com/api/submit-health-data" // Replace with your backend endpoint
+                guard let url = URL(string: urlString) else { return }
+
+                var request = URLRequest(url: url)
+                request.httpMethod = "POST"
+                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+                do {
+                    request.httpBody = try JSONSerialization.data(withJSONObject: data, options: [])
+                } catch {
+                    print("Error serializing JSON: \(error.localizedDescription)")
+                    return
                 }
-            }.resume()
+
+                // Send the request
+                URLSession.shared.dataTask(with: request) { _, _, error in
+                    if let error = error {
+                        print("Error posting data: \(error.localizedDescription)")
+                        return
+                    }
+
+                    print("Successfully posted full HealthKit data!")
+
+                    // Open the website
+                    DispatchQueue.main.async {
+                        if let webURL = URL(string: "https://google.com/") {
+                            openURL(webURL)
+                        }
+                    }
+                }.resume()
+            }
         }
     }
-}
 
 
 #Preview {
