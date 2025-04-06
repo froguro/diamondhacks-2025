@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const User = require('./models/User');
+const DailyLog = require('./models/DailyLog');
+
 
 const app = express();
 dotenv.config();
@@ -76,8 +78,6 @@ app.post('/api/signup', async (req, res) => {
       res.status(500).json({ message: 'Error creating user', error: error.message });
     }
   });
-
-// ... existing endpoints ...
 
 // Password update endpoint
 app.post('/api/update-password', authenticateToken, async (req, res) => {
@@ -152,6 +152,44 @@ app.get('/api/dashboard', authenticateToken, async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching user data', error: error.message });
+  }
+});
+
+// Get daily log for specific date
+app.get('/api/daily-log/:date', authenticateToken, async (req, res) => {
+  try {
+    const log = await DailyLog.findOne({
+      userId: req.user.userId,
+      date: new Date(req.params.date)
+    });
+    res.json(log || {});
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching log' });
+  }
+});
+
+// Save daily log
+app.post('/api/daily-log', authenticateToken, async (req, res) => {
+  try {
+    const existingLog = await DailyLog.findOne({
+      userId: req.user.userId,
+      date: new Date(req.body.date)
+    });
+
+    if (existingLog) {
+      Object.assign(existingLog, req.body);
+      await existingLog.save();
+      res.json(existingLog);
+    } else {
+      const newLog = new DailyLog({
+        userId: req.user.userId,
+        ...req.body
+      });
+      await newLog.save();
+      res.json(newLog);
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error saving log' });
   }
 });
 

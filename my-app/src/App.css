@@ -142,3 +142,85 @@ h1, h2 {
   margin: 10px 0;
   font-size: 16px;
 }
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.logo {
+  cursor: pointer;
+}
+
+.logo img {
+  height: 40px;
+  width: auto;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-buttons button {
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  border: 2px solid #007bff;
+  color: #007bff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-buttons button:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Add this to your existing .App class to account for the fixed navbar */
+.App {
+  padding-top: 80px; /* Adjust based on your navbar height */
+}
+
+.profile-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px;
+  text-align: center;
+}
+
+.profile-page h1 {
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.medical-history-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px;
+  text-align: center;
+}
+
+.medical-history-page h1 {
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.logout-button {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+}
+
+.logout-button:hover {
+  background-color: #c82333 !important;
+  border-color: #bd2130 !important;
+}

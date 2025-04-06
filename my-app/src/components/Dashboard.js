@@ -1,62 +1,92 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import dayjs from 'dayjs';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { Button, Box, Typography } from '@mui/material';
+import Navbar from './Navbar';
+import LogSection from './LogSection';  // Add this import
 
 function Dashboard() {
-  const [userData, setUserData] = useState(null);
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [value, setValue] = useState(dayjs());
+  const [showLogSection, setShowLogSection] = useState(false);
+  const [logData, setLogData] = useState(null);
+  const firstName = localStorage.getItem('firstName') || 'User';
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/dashboard', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
+  const fetchDailyLog = async (date) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/daily-log/${date.format('YYYY-MM-DD')}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
-
-        const data = await response.json();
-        setUserData(data);
-      } catch (error) {
-        setError('Error fetching user data');
-        console.error('Error:', error);
-      }
-    };
-
-    fetchUserData();
-  }, [navigate]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
+      });
+      const data = await response.json();
+      setLogData(data);
+    } catch (error) {
+      console.error('Error fetching log:', error);
+      setLogData(null);
+    }
   };
 
-  if (!userData) {
-    return <div>Loading...</div>;
-  }
+  const handleDateChange = (newValue) => {
+    setValue(newValue);
+    setShowLogSection(false);
+    fetchDailyLog(newValue);
+  };
+
+  const handleLogStats = async () => {
+    await fetchDailyLog(value); // Fetch data for the selected date
+    setShowLogSection(true);
+  };
+
+  const handleImportStats = () => {
+    // TODO: Implement import stats functionality
+    console.log('Importing stats for:', value.format('YYYY-MM-DD'));
+  };
 
   return (
-    <div className="dashboard">
-      <div className="dashboard-content">
-        <h1>Welcome, {userData.firstName}!</h1>
-        <div className="user-info">
-          <p><strong>Name:</strong> {userData.firstName} {userData.lastName}</p>
-          <p><strong>Email:</strong> {userData.email}</p>
-        </div>
-        {error && <p className="error-message">{error}</p>}
-        <button onClick={handleLogout}>Logout</button>
+    <>
+      <Navbar />
+      <div className="dashboard">
+        <Typography variant="h4" sx={{ mb: 4 }}>
+          Welcome, {firstName}
+        </Typography>
+        
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateCalendar 
+              value={value} 
+              onChange={handleDateChange} 
+            />
+          </LocalizationProvider>
+
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={handleLogStats}
+            >
+              Log Stats
+            </Button>
+            <Button 
+              variant="contained" 
+              color="secondary" 
+              onClick={handleImportStats}
+            >
+              Import Stats
+            </Button>
+          </Box>
+
+          {showLogSection && (
+            <LogSection 
+              selectedDate={value} 
+              onClose={() => setShowLogSection(false)}
+              initialData={logData}
+            />
+          )}
+        </Box>
       </div>
-    </div>
+    </>
   );
 }
 
