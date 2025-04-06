@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { Button, Box, Typography } from '@mui/material';
 import Navbar from './Navbar';
-import LogSection from './LogSection';  // Add this import
+import LogSection from './LogSection';
 
 function Dashboard() {
   const [value, setValue] = useState(dayjs());
@@ -15,6 +15,8 @@ function Dashboard() {
   const isMobile = /iPhone|Android/i.test(navigator.userAgent);
   const [showMessage, setShowMessage] = useState(false);
   const [polling, setPolling] = useState(false);
+  const [loading, setLoading] = useState(false); // New state for button loading
+  const pollIntervalRef = useRef(null); // Ref to store the polling interval
   const username = localStorage.getItem('username');
 
   const checkForNewHealthData = async () => {
@@ -23,64 +25,65 @@ function Dashboard() {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           date: value.format('YYYY-MM-DD'),
-          username: username
-        })
+          username: username,
+        }),
       });
 
       const data = await response.json();
       if (data.dataImported) {
-        setPolling(false);
-        await fetchDailyLog(value);
-        setShowLogSection(true);
+        setPolling(false); // Stop polling
+        clearInterval(pollIntervalRef.current); // Clear the interval
+        setLoading(false); // Stop the loading indicator
+        await fetchDailyLog(value); // Fetch the daily log
+        setShowLogSection(true); // Show the log section
       }
     } catch (error) {
       console.error('Error checking health data:', error);
+      setPolling(false); // Stop polling on error
+      clearInterval(pollIntervalRef.current);
+      setLoading(false); // Stop the loading indicator
     }
   };
 
   const handleImportStats = () => {
-    // if (isMobile) {
-    //   window.location.href = 'solz://';
-    // } else {
-    //   setShowMessage(true);
-    //   // Set a timer to hide the message after 5 seconds
-    //   setTimeout(() => {
-    //     setShowMessage(false);
-    //   }, 5000);
-    // }
-    
+    setLoading(true); // Start the loading indicator
+    setPolling(true); // Start polling
+
     // Start polling for new health data
-    setPolling(true);
-    const pollInterval = setInterval(() => {
+    pollIntervalRef.current = setInterval(() => {
       if (polling) {
         checkForNewHealthData();
       } else {
-        clearInterval(pollInterval);
+        clearInterval(pollIntervalRef.current);
       }
     }, 3000); // Check every 3 seconds
 
-    // Stop polling after 2 minutes if no data found
+    // Stop polling after 2 minutes if no data is found
     setTimeout(() => {
       setPolling(false);
-      clearInterval(pollInterval);
+      clearInterval(pollIntervalRef.current);
+      setLoading(false); // Stop the loading indicator
     }, 120000);
   };
 
   // Cleanup polling on component unmount
   useEffect(() => {
-    return () => setPolling(false);
+    return () => {
+      setPolling(false);
+      clearInterval(pollIntervalRef.current);
+    };
   }, []);
 
   const fetchDailyLog = async (date) => {
     try {
       const response = await fetch(`https://diamondhacks-2025.onrender.com/api/daily-log/${date.format('YYYY-MM-DD')}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
       });
       const data = await response.json();
       setLogData(data);
@@ -134,9 +137,10 @@ function Dashboard() {
               variant="contained" 
               color="secondary" 
               onClick={handleImportStats}
+              disabled={loading} // Disable the button while loading
               sx={{ backgroundColor: '#f87060' }}
             >
-              Import Stats
+              {loading ? 'Importing...' : 'Import Stats'} {/* Show loading text */}
             </Button>
             <Button
               variant="contained"
