@@ -5,6 +5,90 @@
     },
     "daily_logs": [
       {
+        "date": "2025-03-30",
+        "steps": 9600,
+        "calories_burned": 460,
+        "active_energy": 320,
+        "resting_energy": 140,
+        "flights_climbed": 6,
+        "sleep_hours": 6.8,
+        "heart_rate": {
+          "range": [60, 108],
+          "walking_average": 82,
+          "resting_rate": 63
+        }
+      },
+      {
+        "date": "2025-03-31",
+        "steps": 11200,
+        "calories_burned": 500,
+        "active_energy": 360,
+        "resting_energy": 140,
+        "flights_climbed": 9,
+        "sleep_hours": 7.5,
+        "heart_rate": {
+          "range": [58, 110],
+          "walking_average": 83,
+          "resting_rate": 61
+        }
+      },
+      {
+        "date": "2025-04-01",
+        "steps": 8900,
+        "calories_burned": 420,
+        "active_energy": 310,
+        "resting_energy": 110,
+        "flights_climbed": 7,
+        "sleep_hours": 6.9,
+        "heart_rate": {
+          "range": [59, 106],
+          "walking_average": 80,
+          "resting_rate": 60
+        }
+      },
+      {
+        "date": "2025-04-02",
+        "steps": 10100,
+        "calories_burned": 470,
+        "active_energy": 340,
+        "resting_energy": 130,
+        "flights_climbed": 8,
+        "sleep_hours": 7.1,
+        "heart_rate": {
+          "range": [56, 109],
+          "walking_average": 81,
+          "resting_rate": 62
+        }
+      },
+      {
+        "date": "2025-04-03",
+        "steps": 11500,
+        "calories_burned": 510,
+        "active_energy": 370,
+        "resting_energy": 140,
+        "flights_climbed": 10,
+        "sleep_hours": 7.8,
+        "heart_rate": {
+          "range": [57, 112],
+          "walking_average": 84,
+          "resting_rate": 63
+        }
+      },
+      {
+        "date": "2025-04-04",
+        "steps": 9700,
+        "calories_burned": 455,
+        "active_energy": 330,
+        "resting_energy": 125,
+        "flights_climbed": 7,
+        "sleep_hours": 7.0,
+        "heart_rate": {
+          "range": [58, 107],
+          "walking_average": 82,
+          "resting_rate": 61
+        }
+      },
+      {
         "date": "2025-04-05",
         "steps": 10400,
         "calories_burned": 480,
@@ -45,3 +129,4 @@
       ]
     }
   }
+  

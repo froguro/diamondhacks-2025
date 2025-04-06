@@ -13,7 +13,7 @@ const main = async () => {
 
     const prompt = `
 You are a health assistant AI. Summarize the following user health data into a clear, readable summary.
-Include: activity, sleep, heart rate, medical history, recent test results, and AI recommendations.
+Include: activity, sleep, heart rate, medical history, recent test results, and AI recommendations. Set a goal for tomorrow based on the data. Only mention information that is not within normal ranges. Praise the exceptional and point out what is concerning.
 
 JSON:
 ${JSON.stringify(parsedData, null, 2)}
