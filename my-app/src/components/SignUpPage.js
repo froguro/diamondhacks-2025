@@ -25,65 +25,27 @@ function SignUpPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-
-    // Input validation
-    if (!username.trim() || !password.trim() || !firstName.trim() || !lastName.trim()) {
-      setError('All fields are required');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      return;
-    }
-
     try {
       const response = await fetch('http://localhost:5000/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password, firstName, lastName }),
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('token', data.token);
-        navigate('/dashboard');
+        setSuccess(true);
+        setTimeout(() => {
+          navigate('/login');
+        }, 3000); // Redirect to login after 3 seconds
       } else {
-        switch (response.status) {
-          case 400:
-            setError(data.message || 'Invalid input data');
-            break;
-          case 409:
-            setError('Username already exists');
-            break;
-          case 422:
-            setError('Invalid username or password format');
-            break;
-          case 500:
-            setError('Server error. Please try again later');
-            break;
-          default:
-            setError(data.message || 'Registration failed');
-        }
+        setError(data.message || 'Signup failed');
       }
     } catch (error) {
-      if (!navigator.onLine) {
-        setError('No internet connection. Please check your network');
-      } else if (error.name === 'TypeError') {
-        setError('Unable to connect to server. Please try again later');
-      } else {
-        console.error('Signup error:', error);
-        setError('An unexpected error occurred. Please try again');
-      }
+      setError('An error occurred. Please try again.');
     }
   };
 
