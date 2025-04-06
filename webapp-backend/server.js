@@ -27,9 +27,13 @@ const authenticateToken = (req, res, next) => {
 
   if (!token) return res.status(401).json({ message: 'Access denied' });
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) return res.status(403).json({ message: 'Invalid token' });
-    req.user = user;
+    // Store both userId and username in req.user
+    req.user = {
+      userId: decoded.userId,
+      username: decoded.username
+    };
     next();
   });
 };
@@ -113,29 +117,36 @@ app.post('/api/update-password', authenticateToken, async (req, res) => {
 // Login endpoint
 // Login endpoint
 app.post('/api/login', async (req, res) => {
-    try {
-      const { username, password } = req.body;
-  
-      // Find user by username instead of email
-      const user = await User.findOne({ username });
-      if (!user) {
-        return res.status(400).json({ message: 'User not found' });
-      }
-  
-      // Verify password
-      const validPassword = await bcrypt.compare(password, user.password);
-      if (!validPassword) {
-        return res.status(400).json({ message: 'Invalid password' });
-      }
-  
-      // Generate JWT token
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-  
-      res.json({ token, firstName: user.firstName });
-    } catch (error) {
-      res.status(500).json({ message: 'Error logging in', error: error.message });
+  try {
+    const { username, password } = req.body;
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
     }
-  });
+
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      return res.status(400).json({ message: 'Invalid password' });
+    }
+
+    const token = jwt.sign(
+      { 
+        userId: user._id, 
+        username: user.username  // Include username in token
+      }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '1h' }
+    );
+
+    res.json({ 
+      token, 
+      firstName: user.firstName,
+      username: user.username  // Send username in response
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error logging in', error: error.message });
+  }
+});
 
 // Protected dashboard endpoint
 app.get('/api/dashboard', authenticateToken, async (req, res) => {
@@ -182,8 +193,8 @@ app.post('/api/daily-log', authenticateToken, async (req, res) => {
       res.json(existingLog);
     } else {
       const newLog = new DailyLog({
-        userId: req.user.userId,
-        ...req.body
+        ...req.body,
+        userId: req.user.userId
       });
       await newLog.save();
       res.json(newLog);
