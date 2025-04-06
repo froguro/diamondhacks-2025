@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>UIApplicationSceneManifest</key>
+    <dict>
+        <key>UIApplicationSupportsMultipleScenes</key>
+        <true/>
+        <key>UIApplicationSupportsTabbedSceneCollection</key>
+        <false/>
+        <key>UISceneConfigurations</key>
+        <dict/>
+    </dict>
+
+    <!-- ✅ Correct placement of HealthKit usage descriptions -->
+    <key>NSHealthShareUsageDescription</key>
+    <string>We need access to your step count to personalize your experience.</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>We need access to your step count to personalize your experience.</string>
+</dict>
+</plist>
