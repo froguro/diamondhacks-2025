@@ -1,0 +1,47 @@
+{
+    "user": {
+      "id": "user_001",
+      "name": "Alice Smith"
+    },
+    "daily_logs": [
+      {
+        "date": "2025-04-05",
+        "steps": 10400,
+        "calories_burned": 480,
+        "active_energy": 350,
+        "resting_energy": 130,
+        "flights_climbed": 8,
+        "sleep_hours": 7.2,
+        "heart_rate": {
+          "range": [58, 110],
+          "walking_average": 84,
+          "resting_rate": 62
+        }
+      }
+    ],
+    "medical_info": {
+      "conditions": ["hypertension", "asthma"],
+      "immunizations": [
+        { "name": "Flu", "date": "2024-10-15" },
+        { "name": "COVID-19", "date": "2024-12-01" }
+      ],
+      "test_results": [
+        {
+          "name": "CBC",
+          "date": "2025-03-25",
+          "results": { "WBC": 5.4, "RBC": 4.8 }
+        }
+      ],
+      "allergies": [
+        { "substance": "penicillin", "reaction": "rash" }
+      ]
+    },
+    "ai_insights": {
+      "last_updated": "2025-04-05",
+      "summary": "You’re doing well. Keep monitoring cholesterol.",
+      "warnings": [],
+      "recommendations": [
+        "Continue light cardio to support heart health."
+      ]
+    }
+  }
