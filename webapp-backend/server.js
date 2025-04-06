@@ -258,7 +258,6 @@ app.post('/api/submit-health-data', async (req, res) => {
     const healthData = new HealthData({
       username,
       timestamp,
-      date,
       stepCount,
       distanceWalkingRunning,
       restingEnergy,

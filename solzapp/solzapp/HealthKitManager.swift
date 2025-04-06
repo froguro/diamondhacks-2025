@@ -100,10 +100,7 @@ class HealthKitManager {
         fetchSleepHours()
 
         dispatchGroup.notify(queue: .main) {
-            let now = Date()
-            results["timestamp"] = Int(now.timeIntervalSince1970)
-            results["date"] = ISO8601DateFormatter().string(from: now)
-
+            results["timestamp"] = Int(Date().timeIntervalSince1970)
             completion(results, fetchError)
         }
     }
